@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SwiftDesk — Raise a Ticket</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;650;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <span class="mark">SD</span>
+    SwiftDesk
+  </div>
+  <nav>
+    <a href="/" class="active">Raise a Ticket</a>
+    <a href="/support">Support Team</a>
+    <a href="/admin">Admin Dashboard</a>
+  </nav>
+</div>
+
+<div class="page">
+  <div class="page-header">
+    <h1>Raise a ticket</h1>
+    <p>Tell us what's going on. We'll route it to the right engineer automatically based on priority.</p>
+  </div>
+
+  <div class="grid-two">
+    <!-- Raise Ticket Form -->
+    <div class="card">
+      <div class="card-header">
+        <h2>New ticket</h2>
+      </div>
+      <div class="card-body">
+
+        <div id="alert-box" class="alert"></div>
+
+        <form id="ticket-form" novalidate>
+          <div class="field" data-field="customer_name">
+            <label for="customer_name">Your name</label>
+            <input type="text" id="customer_name" name="customer_name" placeholder="Jordan Lee" maxlength="120" />
+            <div class="field-error">Please enter your name.</div>
+          </div>
+
+          <div class="field" data-field="customer_email">
+            <label for="customer_email">Your email</label>
+            <input type="email" id="customer_email" name="customer_email" placeholder="jordan@example.com" />
+            <div class="field-error">Please enter a valid email address.</div>
+          </div>
+
+          <div class="field" data-field="customer_id">
+            <label for="customer_id">Customer ID</label>
+            <input type="text" id="customer_id" name="customer_id" placeholder="CUST-2041" maxlength="50" />
+          </div>
+
+          <div class="field" data-field="title">
+            <label for="title">Subject</label>
+            <input type="text" id="title" name="title" placeholder="Login page returns a 500 error" maxlength="200" />
+            <div class="field-error">Please enter a short subject line.</div>
+          </div>
+
+          <div class="field" data-field="description">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" placeholder="What happened? Steps to reproduce, error messages, when it started..." maxlength="5000"></textarea>
+            <div class="field-error">Please describe the issue.</div>
+          </div>
+
+          <div class="field" data-field="category">
+            <label for="category">Category</label>
+            <select id="category" name="category">
+              <option value="Other">Other</option>
+              <option value="Technical">Technical</option>
+              <option value="Billing">Billing</option>
+              <option value="Account">Account</option>
+              <option value="Delivery">Delivery</option>
+            </select>
+          </div>
+
+          <div class="field" data-field="channel">
+            <label for="channel">Report channel</label>
+            <select id="channel" name="channel">
+              <option value="web_app">Web app</option>
+              <option value="mobile_app">Mobile app</option>
+              <option value="email">Email</option>
+              <option value="phone">Phone</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="field" data-field="priority">
+            <label>Priority</label>
+            <div class="priority-choice">
+              <input type="radio" name="priority" id="p-low" value="LOW" checked />
+              <label for="p-low">Low</label>
+
+              <input type="radio" name="priority" id="p-medium" value="MEDIUM" />
+              <label for="p-medium">Medium</label>
+
+              <input type="radio" name="priority" id="p-high" value="HIGH" />
+              <label for="p-high">High</label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="submit-btn">Submit ticket</button>
+        </form>
+
+      </div>
+    </div>
+
+    <!-- Ticket list / lookup -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Ticket lookup</h2>
+        <span class="sub">Find tickets by email</span>
+      </div>
+      <div class="list-toolbar">
+        <input type="text" id="filter-email" placeholder="Filter by email…" style="flex:1; min-width:200px;" />
+        <select id="filter-status">
+          <option value="">All statuses</option>
+          <option value="OPEN">Open</option>
+          <option value="RESOLVED">Resolved</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" id="refresh-btn">Refresh</button>
+      </div>
+      <div class="ticket-list" id="ticket-list">
+        <div class="empty-state">Loading tickets…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/customer.js"></script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SwiftDesk — Admin Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;650;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <span class="mark">SD</span>
+    SwiftDesk
+  </div>
+  <nav>
+    <a href="/">Raise a Ticket</a>
+    <a href="/support">Support Team</a>
+    <a href="/admin" class="active">Admin Dashboard</a>
+  </nav>
+</div>
+
+<div class="page">
+  <div class="page-header">
+    <h1>Admin dashboard</h1>
+    <p>Live overview of ticket volume, routing, and recent activity.</p>
+  </div>
+
+  <div id="alert-box" class="alert"></div>
+
+  <div class="page-actions">
+    <button class="btn btn-primary" id="daily-report-btn">Send end-of-day report</button>
+  </div>
+
+  <!-- Stat cards -->
+  <div class="stat-grid">
+    <div class="stat-card accent">
+      <div class="label">Total tickets</div>
+      <div class="value" id="stat-total">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Open tickets</div>
+      <div class="value" id="stat-open">—</div>
+    </div>
+    <div class="stat-card teal">
+      <div class="label">Resolved tickets</div>
+      <div class="value" id="stat-resolved">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Resolution rate</div>
+      <div class="value" id="stat-rate">—</div>
+    </div>
+  </div>
+
+  <div class="grid-two" style="grid-template-columns: 1fr 1fr;">
+    <!-- Tickets by priority -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Tickets by priority</h2>
+      </div>
+      <div class="card-body">
+        <div class="priority-bars" id="priority-bars">
+          <div class="empty-state">Loading…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tickets by category -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Tickets by category</h2>
+      </div>
+      <div class="card-body">
+        <div class="dashboard-list" id="category-list">
+          <div class="empty-state">Loading…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent audit logs -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Recent audit logs</h2>
+        <span class="sub">Created · Assigned · Resolved</span>
+      </div>
+      <div class="audit-list" id="audit-list">
+        <div class="empty-state">Loading…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card section-gap">
+    <div class="card-header">
+      <h2>Recent ticket history</h2>
+      <span class="sub">Latest customer requests and routing details</span>
+    </div>
+    <div class="ticket-list" id="history-list">
+      <div class="empty-state">Loading recent ticket history…</div>
+    </div>
+  </div>
+
+  <div class="card section-gap">
+    <div class="card-header">
+      <h2>Agent workload</h2>
+      <span class="sub">Open tickets by assigned agent</span>
+    </div>
+    <div class="card-body">
+      <div class="dashboard-list" id="workload-list">
+        <div class="empty-state">Loading agent workload…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ticket management -->
+  <div class="card section-gap">
+    <div class="card-header">
+      <h2>All tickets</h2>
+      <span class="sub">Manage routing and resolution</span>
+    </div>
+    <div class="list-toolbar">
+      <select id="filter-status">
+        <option value="">All statuses</option>
+        <option value="OPEN">Open</option>
+        <option value="RESOLVED">Resolved</option>
+      </select>
+      <select id="filter-priority">
+        <option value="">All priorities</option>
+        <option value="LOW">Low</option>
+        <option value="MEDIUM">Medium</option>
+        <option value="HIGH">High</option>
+      </select>
+      <button class="btn btn-ghost btn-sm" id="refresh-btn">Refresh</button>
+    </div>
+    <div class="ticket-list" id="ticket-list">
+      <div class="empty-state">Loading tickets…</div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/admin.js"></script>
+</body>
+</html>

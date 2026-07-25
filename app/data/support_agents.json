@@ -1,0 +1,11 @@
+{
+  "support_agents": [
+    { "agent_id": "A-101", "name": "Ravi Kumar",   "email": "ravi.kumar@swiftdesk.com",   "level": "L1", "status": "available", "active_tickets": 0, "max_capacity": 5 },
+    { "agent_id": "A-102", "name": "Sneha Pillai",  "email": "sneha.pillai@swiftdesk.com", "level": "L1", "status": "available", "active_tickets": 2, "max_capacity": 5 },
+    { "agent_id": "A-103", "name": "Kiran Babu",    "email": "kiran.babu@swiftdesk.com",   "level": "L1", "status": "offline",   "active_tickets": 0, "max_capacity": 5 },
+    { "agent_id": "B-201", "name": "Meera Reddy",   "email": "meera.reddy@swiftdesk.com",  "level": "L2", "status": "available", "active_tickets": 1, "max_capacity": 4 },
+    { "agent_id": "B-202", "name": "Arjun Nair",    "email": "arjun.nair@swiftdesk.com",   "level": "L2", "status": "available", "active_tickets": 3, "max_capacity": 4 },
+    { "agent_id": "C-301", "name": "Priya Menon",   "email": "priya.menon@swiftdesk.com",  "level": "L3", "status": "available", "active_tickets": 1, "max_capacity": 3 },
+    { "agent_id": "C-302", "name": "Vikram Singh",  "email": "vikram.singh@swiftdesk.com", "level": "L3", "status": "busy",      "active_tickets": 3, "max_capacity": 3 }
+  ]
+}

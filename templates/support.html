@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SwiftDesk — Support Team</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;650;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <span class="mark">SD</span>
+    SwiftDesk
+  </div>
+  <nav>
+    <a href="/">Raise a Ticket</a>
+    <a href="/support">Support Team</a>
+    <a href="/admin">Admin Dashboard</a>
+  </nav>
+</div>
+
+<div class="page">
+  <div class="page-header">
+    <h1>Support team view</h1>
+    <p>See tickets assigned to your team and resolve them quickly.</p>
+  </div>
+
+  <div id="alert-box" class="alert"></div>
+
+  <div class="list-toolbar">
+    <select id="filter-level">
+      <option value="">All levels</option>
+      <option value="L1">L1</option>
+      <option value="L2">L2</option>
+      <option value="L3">L3</option>
+    </select>
+    <select id="filter-status">
+      <option value="">All statuses</option>
+      <option value="OPEN">Open</option>
+      <option value="RESOLVED">Resolved</option>
+    </select>
+    <button class="btn btn-ghost btn-sm" id="refresh-btn">Refresh</button>
+  </div>
+
+  <div class="ticket-list" id="ticket-list">
+    <div class="empty-state">Loading tickets…</div>
+  </div>
+</div>
+
+<script src="/static/js/support.js"></script>
+</body>
+</html>
