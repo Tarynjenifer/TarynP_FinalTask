@@ -1,4 +1,4 @@
-# Support Ticket Automation System
+# Support Ticket Automation System taryn
 
 A complete, runnable localhost support ticket system: customers raise tickets
 through a web form, tickets are automatically routed to the right support
