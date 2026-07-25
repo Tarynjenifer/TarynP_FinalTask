@@ -139,8 +139,10 @@ def create_ticket():
             append_ticket_history(db, ticket)
 
         # Notifications happen after the transaction commits successfully.
+        logger.info("Calling notify_ticket_created for ticket %s", ticket_id)
         notifications.notify_ticket_created(ticket)
         if assignment_info:
+            logger.info("Calling notify_engineer_assigned for ticket %s", ticket_id)
             notifications.notify_engineer_assigned(ticket)
 
         return jsonify(ticket), 201
@@ -230,9 +232,11 @@ def resolve_ticket(ticket_id: int):
                 if promoted_ticket:
                     audit.log_ticket_assigned(db, promoted_id, promoted_ticket.get("assigned_level"), promoted_ticket.get("assigned_agent_name"))
 
+        logger.info("Calling notify_ticket_resolved for ticket %s", ticket_id)
         notifications.notify_ticket_resolved(ticket)
         # Send notifications for the promoted ticket outside the DB transaction.
         if promoted_ticket:
+            logger.info("Calling notify_engineer_assigned for promoted ticket %s", promoted_ticket.get('id'))
             notifications.notify_engineer_assigned(promoted_ticket)
         return jsonify(ticket)
 

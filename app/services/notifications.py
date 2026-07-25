@@ -87,6 +87,7 @@ def send_admin_report(admin_email: str, report_body: str) -> None:
 
 
 def notify_ticket_created(ticket: dict) -> None:
+    print(f"[NOTIFY] notify_ticket_created called for ticket {ticket.get('id')}")
     subject = f"Ticket #{ticket['id']} received: {ticket['title']}"
     body = (
         f"Hi {ticket['customer_name']},\n\n"
@@ -138,6 +139,7 @@ def notify_ticket_created(ticket: dict) -> None:
 
 
 def notify_engineer_assigned(ticket: dict) -> None:
+    print(f"[NOTIFY] notify_engineer_assigned called for ticket {ticket.get('id')} assigned_agent={ticket.get('assigned_agent_name')}")
     subject = f"New ticket assigned: #{ticket['id']} ({ticket['priority']})"
     body = (
         f"Hi {ticket['assigned_agent_name']},\n\n"
@@ -190,6 +192,7 @@ def notify_engineer_assigned(ticket: dict) -> None:
 
 
 def notify_ticket_resolved(ticket: dict) -> None:
+    print(f"[NOTIFY] notify_ticket_resolved called for ticket {ticket.get('id')}")
     subject = f"Ticket #{ticket['id']} resolved: {ticket['title']}"
     body = (
         f"Hi {ticket['customer_name']},\n\n"

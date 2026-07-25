@@ -7,7 +7,7 @@ audit trail. Email notifications are mocked and printed to the terminal.
 
 ## Tech stack
 
-- **Backend:** FastAPI (Python)
+- **Backend:** Flask (Python)
 - **Database:** SQLite via the built-in `sqlite3` module (no ORM)
 - **Frontend:** Plain HTML, CSS, and vanilla JavaScript (no build step)
 
@@ -16,9 +16,9 @@ audit trail. Email notifications are mocked and printed to the terminal.
 ```
 support_ticket_system/
 ├── app/
-│   ├── main.py                  FastAPI app, routing, static file mounts
+│   ├── main.py                  Flask app, routing, static file mounts
 │   ├── database.py              SQLite connection + schema setup
-│   ├── models.py                Pydantic request/response models
+│   ├── models.py                response models
 │   ├── utils.py                 Shared helpers (timestamps)
 │   ├── data/
 │   │   └── support_agents.json  Support agent roster (L1 / L2 / L3)
@@ -78,7 +78,7 @@ that window visible while you test.
 | PUT    | `/api/tickets/{id}/resolve`    | Mark a ticket resolved, notify the customer    |
 | GET    | `/api/dashboard/stats`         | Aggregate counts + recent audit logs           |
 | GET    | `/api/dashboard/audit-logs`    | Full audit log list (`?ticket_id=`, `?limit=`) |
-| GET    | `/api/health`                  | Health check                                   |
+                                 
 
 ### Create a ticket
 
