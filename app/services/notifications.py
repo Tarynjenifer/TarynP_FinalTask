@@ -13,6 +13,7 @@ import sqlite3
 from email.message import EmailMessage
 
 from app.database import get_db, log_notification
+from app.services.assignment import load_agents
 
 
 def _print_email(to_email: str, to_name: str, subject: str, body: str) -> None:
@@ -107,6 +108,31 @@ def notify_ticket_created(ticket: dict) -> None:
                 subject,
                 body,
             )
+            # Also notify support team and admin (if configured)
+            admin_email = os.getenv("ADMIN_EMAIL")
+            support_body = (
+                f"New ticket #{ticket['id']} created by {ticket['customer_name']} ({ticket['customer_email']})\n\n"
+                f"Title: {ticket['title']}\nPriority: {ticket['priority']}\n\n{ticket['description']}"
+            )
+            # Send to each configured support agent individually
+            roster = load_agents()
+            for level_agents in roster.values():
+                for agent in level_agents:
+                    if not agent.get("email"):
+                        continue
+                    _deliver(agent["email"], agent.get("name", "Support Agent"), subject + " [Support]", support_body)
+                    log_notification(
+                        db,
+                        ticket["id"],
+                        "Ticket Created (Support)",
+                        agent.get("name", "Support Agent"),
+                        agent["email"],
+                        subject + " [Support]",
+                        support_body,
+                    )
+            if admin_email:
+                _deliver(admin_email, "Admin", subject + " [Admin]", support_body)
+                log_notification(db, ticket["id"], "Ticket Created (Admin)", "Admin", admin_email, subject + " [Admin]", support_body)
     except sqlite3.Error:
         pass
 
@@ -135,6 +161,30 @@ def notify_engineer_assigned(ticket: dict) -> None:
                 subject,
                 body,
             )
+            # Also send copies to support team and admin
+            admin_email = os.getenv("ADMIN_EMAIL")
+            support_body = (
+                f"Ticket #{ticket['id']} assigned to {ticket['assigned_agent_name']} ({ticket['assigned_agent_email']})\n\n"
+                f"Level: {ticket['assigned_level']}\nTitle: {ticket['title']}\nPriority: {ticket['priority']}"
+            )
+            roster = load_agents()
+            for level_agents in roster.values():
+                for agent in level_agents:
+                    if not agent.get("email"):
+                        continue
+                    _deliver(agent["email"], agent.get("name", "Support Agent"), subject + " [Support]", support_body)
+                    log_notification(
+                        db,
+                        ticket["id"],
+                        "Ticket Assigned (Support)",
+                        agent.get("name", "Support Agent"),
+                        agent["email"],
+                        subject + " [Support]",
+                        support_body,
+                    )
+            if admin_email:
+                _deliver(admin_email, "Admin", subject + " [Admin]", support_body)
+                log_notification(db, ticket["id"], "Ticket Assigned (Admin)", "Admin", admin_email, subject + " [Admin]", support_body)
     except sqlite3.Error:
         pass
 
@@ -150,3 +200,39 @@ def notify_ticket_resolved(ticket: dict) -> None:
         f"- Support Team"
     )
     _deliver(ticket["customer_email"], ticket["customer_name"], subject, body)
+    try:
+        with get_db() as db:
+            log_notification(
+                db,
+                ticket["id"],
+                "Ticket Resolved",
+                ticket["customer_name"],
+                ticket["customer_email"],
+                subject,
+                body,
+            )
+            # Also notify support and admin
+            admin_email = os.getenv("ADMIN_EMAIL")
+            support_body = (
+                f"Ticket #{ticket['id']} resolved by {ticket.get('assigned_agent_name') or 'support team'}\n\nTitle: {ticket['title']}\nPriority: {ticket['priority']}"
+            )
+            roster = load_agents()
+            for level_agents in roster.values():
+                for agent in level_agents:
+                    if not agent.get("email"):
+                        continue
+                    _deliver(agent["email"], agent.get("name", "Support Agent"), subject + " [Support]", support_body)
+                    log_notification(
+                        db,
+                        ticket["id"],
+                        "Ticket Resolved (Support)",
+                        agent.get("name", "Support Agent"),
+                        agent["email"],
+                        subject + " [Support]",
+                        support_body,
+                    )
+            if admin_email:
+                _deliver(admin_email, "Admin", subject + " [Admin]", support_body)
+                log_notification(db, ticket["id"], "Ticket Resolved (Admin)", "Admin", admin_email, subject + " [Admin]", support_body)
+    except sqlite3.Error:
+        pass

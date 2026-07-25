@@ -195,3 +195,31 @@ def get_audit_logs():
     except sqlite3.Error as exc:
         logger.exception("Database error while fetching audit logs")
         return jsonify({"detail": f"Database error: {exc}"}), 500
+
+
+@bp.route("/notification-logs", methods=["GET"])
+def get_notification_logs():
+    ticket_id = request.args.get("ticket_id")
+    limit_value = request.args.get("limit", "50")
+
+    try:
+        limit = int(limit_value)
+    except ValueError:
+        raise BadRequest("limit must be an integer")
+
+    query = "SELECT * FROM notification_logs"
+    params: list = []
+    if ticket_id is not None:
+        query += " WHERE ticket_id = ?"
+        params.append(ticket_id)
+
+    query += " ORDER BY id DESC LIMIT ?"
+    params.append(limit)
+
+    try:
+        with get_db() as db:
+            rows = db.execute(query, params).fetchall()
+            return jsonify([dict(r) for r in rows])
+    except sqlite3.Error as exc:
+        logger.exception("Database error while fetching notification logs")
+        return jsonify({"detail": f"Database error: {exc}"}), 500

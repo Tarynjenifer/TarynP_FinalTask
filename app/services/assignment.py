@@ -307,8 +307,12 @@ def assign_pending_tickets(db: sqlite3.Connection) -> int:
     return assigned_count
 
 
-def assign_next_queued_ticket(db: sqlite3.Connection) -> bool:
-    """Assign the highest-priority queued ticket after a resolution."""
+def assign_next_queued_ticket(db: sqlite3.Connection) -> Optional[int]:
+    """Assign the highest-priority queued ticket after a resolution.
+
+    Returns the ticket id that was assigned, or None if no queued ticket
+    could be assigned.
+    """
     rows = db.execute(
         "SELECT id, priority FROM tickets WHERE status = 'OPEN' AND (assigned_agent_id IS NULL OR assigned_agent_id = '') ORDER BY CASE priority WHEN 'HIGH' THEN 1 WHEN 'MEDIUM' THEN 2 WHEN 'LOW' THEN 3 ELSE 4 END, created_at"
     ).fetchall()
@@ -325,5 +329,5 @@ def assign_next_queued_ticket(db: sqlite3.Connection) -> bool:
                     row["id"],
                 ),
             )
-            return True
-    return False
+            return int(row["id"])
+    return None

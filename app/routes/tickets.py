@@ -19,6 +19,7 @@ from werkzeug.exceptions import BadRequest, Conflict, NotFound
 from app.database import append_ticket_history, get_db
 from app.models import TicketCreateRequest, TicketResponse, TicketResolveRequest
 from app.services import assignment, notifications, audit
+from app.services.ml import predict_ticket
 from app.utils import utc_now_iso
 
 bp = Blueprint("tickets", __name__, url_prefix="/api/tickets")
@@ -57,6 +58,13 @@ def create_ticket():
     except Exception as exc:
         raise BadRequest(str(exc))
 
+    # Try to predict category and priority from title/description using ML model.
+    # If prediction fails or model not present, fall back to provided values.
+    try:
+        predicted_category, predicted_priority = predict_ticket(payload.title, payload.description)
+    except Exception:
+        predicted_category, predicted_priority = None, None
+
     try:
         with get_db() as db:
             created_at = utc_now_iso()
@@ -86,8 +94,8 @@ def create_ticket():
                     payload.customer_id,
                     payload.title,
                     payload.description,
-                    payload.priority.value,
-                    payload.category.value,
+                    (predicted_priority or payload.priority.value),
+                    (predicted_category or payload.category.value),
                     payload.channel.value,
                     created_at,
                     json.dumps(payload.metadata or {}, ensure_ascii=False),
@@ -95,13 +103,15 @@ def create_ticket():
             )
             ticket_id = cursor.lastrowid
 
-            audit.log_ticket_created(db, ticket_id, payload.priority.value)
+            # Log using the final priority (predicted or provided)
+            audit.log_ticket_created(db, ticket_id, (predicted_priority or payload.priority.value))
 
             # Attempt auto-assignment. If the agent roster is missing or
             # misconfigured, keep the ticket open/unassigned rather than
             # failing the whole request.
             try:
-                assignment_info = assignment.auto_assign(db, payload.priority.value)
+                # Use predicted priority (if available) for routing decisions
+                assignment_info = assignment.auto_assign(db, (predicted_priority or payload.priority.value))
                 db.execute(
                     """
                     UPDATE tickets
@@ -208,7 +218,22 @@ def resolve_ticket(ticket_id: int):
             audit.log_ticket_resolved(db, ticket_id, payload.resolution_note or "")
             ticket = _fetch_ticket(db, ticket_id)
 
+            # After resolving a ticket, try to promote and assign the next queued ticket.
+            try:
+                promoted_id = assignment.assign_next_queued_ticket(db)
+            except Exception as exc:
+                promoted_id = None
+
+            promoted_ticket = None
+            if promoted_id:
+                promoted_ticket = _fetch_ticket(db, promoted_id)
+                if promoted_ticket:
+                    audit.log_ticket_assigned(db, promoted_id, promoted_ticket.get("assigned_level"), promoted_ticket.get("assigned_agent_name"))
+
         notifications.notify_ticket_resolved(ticket)
+        # Send notifications for the promoted ticket outside the DB transaction.
+        if promoted_ticket:
+            notifications.notify_engineer_assigned(promoted_ticket)
         return jsonify(ticket)
 
     except sqlite3.Error as exc:
